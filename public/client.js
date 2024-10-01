@@ -5,12 +5,17 @@ const resetButton = document.getElementById('reset-button');
 const playPauseButton = document.getElementById('play-pause-button');
 const stopButton = document.getElementById('stop-button');
 const winPopup = document.getElementById('win-popup');
+const gameOverPopup = document.getElementById('game-over-popup');
 const closePopupButton = document.getElementById('close-popup');
+const closeGameOverPopupButton = document.getElementById('close-game-over-popup');
+const timerDisplay = document.getElementById('timer');
 
 let flippedCards = [];
 let matchedPairs = 0;
 let isGamePaused = false;
 let gameStarted = false;
+let timerInterval;
+let timeLeft = 5 * 60;
 
 socket.on('connect', () => {
     console.log('Connected to server');
@@ -30,10 +35,11 @@ socket.on('cardsGenerated', (cards) => {
     });
     gameStarted = true;
     updatePlayPauseButton();
+    startTimer();
 });
 
 function flipCard() {
-    if (isGamePaused || !gameStarted) return;
+    if (isGamePaused || !gameStarted || timeLeft <= 0) return;
     if (flippedCards.length < 2 && !this.classList.contains('flipped')) {
         this.classList.add('flipped');
         this.textContent = this.dataset.symbol;
@@ -51,6 +57,7 @@ function checkMatch() {
         matchedPairs++;
         if (matchedPairs === 18) {
             winPopup.style.display = 'block';
+            stopTimer();
         }
     } else {
         card1.classList.remove('flipped');
@@ -67,6 +74,7 @@ function resetGame() {
     isGamePaused = false;
     gameStarted = false;
     updatePlayPauseButton();
+    resetTimer();
     socket.emit('requestCards');
 }
 
@@ -74,12 +82,18 @@ function togglePlayPause() {
     if (!gameStarted) return;
     isGamePaused = !isGamePaused;
     updatePlayPauseButton();
+    if (isGamePaused) {
+        stopTimer();
+    } else {
+        startTimer();
+    }
 }
 
 function stopGame() {
     isGamePaused = true;
     gameStarted = false;
     updatePlayPauseButton();
+    stopTimer();
     gameBoard.innerHTML = '';
     window.location.href = '/';
 }
@@ -95,11 +109,60 @@ function updatePlayPauseButton() {
     }
 }
 
+function startTimer() {
+    if (!timerInterval) {
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+}
+
+function resetTimer() {
+    stopTimer();
+    timeLeft = 5 * 60;
+    updateTimerDisplay();
+}
+
+function updateTimer() {
+    if (timeLeft > 0) {
+        timeLeft--;
+        updateTimerDisplay();
+    } else {
+        stopTimer();
+        endGame(false);
+    }
+}
+
+function updateTimerDisplay() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerDisplay.textContent = `Time left: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function endGame(isWin) {
+    isGamePaused = true;
+    gameStarted = false;
+    updatePlayPauseButton();
+    if (isWin) {
+        winPopup.style.display = 'block';
+    } else {
+        gameOverPopup.style.display = 'block';
+    }
+}
+
 resetButton.addEventListener('click', resetGame);
 playPauseButton.addEventListener('click', togglePlayPause);
 stopButton.addEventListener('click', stopGame);
 closePopupButton.addEventListener('click', () => {
     winPopup.style.display = 'none';
+    resetGame();
+});
+
+closeGameOverPopupButton.addEventListener('click', () => {
+    gameOverPopup.style.display = 'none';
     resetGame();
 });
 

@@ -10,6 +10,7 @@
 <body>
     <div id="game-container">
         <h1>Play Card Guessing Game</h1>
+        <div id="timer">Time: 00:00</div>
         <div id="game-controls">
             <button id="reset-button" class="control-button">
                 <i class="fas fa-redo"></i>
@@ -28,6 +29,13 @@
         <p>You've won the game!</p>
         <button id="close-popup">Close</button>
     </div>
+
+    <div id="game-over-popup" class="popup">
+        <h2>Time's up!</h2>
+        <p>Game over.</p>
+        <button id="close-game-over-popup" class="close-popup">Close</button>
+    </div>
+    
     <script src="/socket.io/socket.io.js"></script>
     <script src="/client.js"></script>
 </body>
