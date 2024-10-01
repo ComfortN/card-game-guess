@@ -15,3 +15,51 @@ body {
 }
 
 
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+
+.card {
+    width: 80px;
+    height: 120px;
+    background-color: #F4E2B2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+
+.card:hover {
+    transform: scale(1.05);
+}
+.card.flipped {
+    background-color: #B4BB87;
+}
+
+
+#win-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #849571;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+
+#close-popup {
+    background-color: #CFCE95;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+}

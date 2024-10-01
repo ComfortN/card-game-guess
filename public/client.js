@@ -2,6 +2,8 @@ const socket = io();
 
 const gameBoard = document.getElementById('game-board');
 const resetButton = document.getElementById('reset-button');
+const winPopup = document.getElementById('win-popup');
+const closePopupButton = document.getElementById('close-popup');
 
 let flippedCards = [];
 let matchedPairs = 0;
@@ -52,7 +54,17 @@ function checkMatch() {
     flippedCards = [];
 }
 
+function resetGame() {
+    matchedPairs = 0;
+    flippedCards = [];
+    socket.emit('requestCards');
+}
 
+resetButton.addEventListener('click', resetGame);
+closePopupButton.addEventListener('click', () => {
+    winPopup.style.display = 'none';
+    resetGame();
+});
 
 // For debugging
 socket.on('connect_error', (error) => {
