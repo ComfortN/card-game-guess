@@ -19,9 +19,38 @@ socket.on('cardsGenerated', (cards) => {
         card.classList.add('card');
         card.dataset.symbol = symbol;
         card.dataset.index = index;
+        card.addEventListener('click', flipCard);
         gameBoard.appendChild(card);
     });
 });
+
+function flipCard() {
+    if (flippedCards.length < 2 && !this.classList.contains('flipped')) {
+        this.classList.add('flipped');
+        this.textContent = this.dataset.symbol;
+        flippedCards.push(this);
+
+        if (flippedCards.length === 2) {
+            setTimeout(checkMatch, 500);
+        }
+    }
+}
+
+function checkMatch() {
+    const [card1, card2] = flippedCards;
+    if (card1.dataset.symbol === card2.dataset.symbol) {
+        matchedPairs++;
+        if (matchedPairs === 18) {
+            winPopup.style.display = 'block';
+        }
+    } else {
+        card1.classList.remove('flipped');
+        card2.classList.remove('flipped');
+        card1.textContent = '';
+        card2.textContent = '';
+    }
+    flippedCards = [];
+}
 
 
 
