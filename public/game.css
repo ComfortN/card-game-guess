@@ -20,7 +20,14 @@ h1{
 }
 
 
-#timer {
+.game-time{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5em;
+}
+
+#timer #score {
     font-size: 1.2em;
     font-weight: bold;
     margin-bottom: 10px;

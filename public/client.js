@@ -9,6 +9,7 @@ const gameOverPopup = document.getElementById('game-over-popup');
 const closePopupButton = document.getElementById('close-popup');
 const closeGameOverPopupButton = document.getElementById('close-game-over-popup');
 const timerDisplay = document.getElementById('timer');
+const scoreDisplay = document.getElementById('score');
 
 let flippedCards = [];
 let matchedPairs = 0;
@@ -16,11 +17,13 @@ let isGamePaused = false;
 let gameStarted = false;
 let timerInterval;
 let timeLeft = 5 * 60;
+let score = 0;
 
 socket.on('connect', () => {
     console.log('Connected to server');
     socket.emit('requestCards');
 });
+
 
 socket.on('cardsGenerated', (cards) => {
     console.log('Received cards:', cards);
@@ -36,7 +39,9 @@ socket.on('cardsGenerated', (cards) => {
     gameStarted = true;
     updatePlayPauseButton();
     startTimer();
+    updateScoreDisplay();
 });
+
 
 function flipCard() {
     if (isGamePaused || !gameStarted || timeLeft <= 0) return;
@@ -51,10 +56,12 @@ function flipCard() {
     }
 }
 
+
 function checkMatch() {
     const [card1, card2] = flippedCards;
     if (card1.dataset.symbol === card2.dataset.symbol) {
         matchedPairs++;
+        score +=10;
         if (matchedPairs === 18) {
             winPopup.style.display = 'block';
             stopTimer();
@@ -64,19 +71,25 @@ function checkMatch() {
         card2.classList.remove('flipped');
         card1.textContent = '';
         card2.textContent = '';
+        score = Math.max(0, score - 1);
     }
     flippedCards = [];
+    updateScoreDisplay();
 }
+
 
 function resetGame() {
     matchedPairs = 0;
     flippedCards = [];
     isGamePaused = false;
     gameStarted = false;
+    score = 0;
     updatePlayPauseButton();
     resetTimer();
+    updateScoreDisplay();
     socket.emit('requestCards');
 }
+
 
 function togglePlayPause() {
     if (!gameStarted) return;
@@ -89,6 +102,7 @@ function togglePlayPause() {
     }
 }
 
+
 function stopGame() {
     isGamePaused = true;
     gameStarted = false;
@@ -97,6 +111,7 @@ function stopGame() {
     gameBoard.innerHTML = '';
     window.location.href = '/';
 }
+
 
 function updatePlayPauseButton() {
     const icon = playPauseButton.querySelector('i');
@@ -109,22 +124,26 @@ function updatePlayPauseButton() {
     }
 }
 
+
 function startTimer() {
     if (!timerInterval) {
         timerInterval = setInterval(updateTimer, 1000);
     }
 }
 
+
 function stopTimer() {
     clearInterval(timerInterval);
     timerInterval = null;
 }
+
 
 function resetTimer() {
     stopTimer();
     timeLeft = 5 * 60;
     updateTimerDisplay();
 }
+
 
 function updateTimer() {
     if (timeLeft > 0) {
@@ -136,11 +155,18 @@ function updateTimer() {
     }
 }
 
+
 function updateTimerDisplay() {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
     timerDisplay.textContent = `Time left: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
+
+
+function updateScoreDisplay() {
+    scoreDisplay.textContent = `Score: ${score}`;
+}
+
 
 function endGame(isWin) {
     isGamePaused = true;
@@ -153,6 +179,7 @@ function endGame(isWin) {
     }
 }
 
+
 resetButton.addEventListener('click', resetGame);
 playPauseButton.addEventListener('click', togglePlayPause);
 stopButton.addEventListener('click', stopGame);
@@ -161,10 +188,12 @@ closePopupButton.addEventListener('click', () => {
     resetGame();
 });
 
+
 closeGameOverPopupButton.addEventListener('click', () => {
     gameOverPopup.style.display = 'none';
     resetGame();
 });
+
 
 // For debugging
 socket.on('connect_error', (error) => {
