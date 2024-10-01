@@ -4,13 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Card Guessing Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/game.css">
 </head>
 <body>
     <div id="game-container">
         <h1>Play Card Guessing Game</h1>
+        <div id="game-controls">
+            <button id="reset-button" class="control-button">
+                <i class="fas fa-redo"></i>
+            </button>
+            <button id="play-pause-button" class="control-button">
+                <i class="fas fa-play"></i>
+            </button>
+            <button id="stop-button" class="control-button">
+                <i class="fas fa-stop"></i>
+            </button>
+        </div>
         <div id="game-board"></div>
-        <!-- <button id="reset-button">Reset Game</button> -->
     </div>
     <div id="win-popup">
         <h2>Congratulations!</h2>

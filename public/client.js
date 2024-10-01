@@ -2,11 +2,15 @@ const socket = io();
 
 const gameBoard = document.getElementById('game-board');
 const resetButton = document.getElementById('reset-button');
+const playPauseButton = document.getElementById('play-pause-button');
+const stopButton = document.getElementById('stop-button');
 const winPopup = document.getElementById('win-popup');
 const closePopupButton = document.getElementById('close-popup');
 
 let flippedCards = [];
 let matchedPairs = 0;
+let isGamePaused = false;
+let gameStarted = false;
 
 socket.on('connect', () => {
     console.log('Connected to server');
@@ -24,9 +28,12 @@ socket.on('cardsGenerated', (cards) => {
         card.addEventListener('click', flipCard);
         gameBoard.appendChild(card);
     });
+    gameStarted = true;
+    updatePlayPauseButton();
 });
 
 function flipCard() {
+    if (isGamePaused || !gameStarted) return;
     if (flippedCards.length < 2 && !this.classList.contains('flipped')) {
         this.classList.add('flipped');
         this.textContent = this.dataset.symbol;
@@ -57,10 +64,40 @@ function checkMatch() {
 function resetGame() {
     matchedPairs = 0;
     flippedCards = [];
+    isGamePaused = false;
+    gameStarted = false;
+    updatePlayPauseButton();
     socket.emit('requestCards');
 }
 
+function togglePlayPause() {
+    if (!gameStarted) return;
+    isGamePaused = !isGamePaused;
+    updatePlayPauseButton();
+}
+
+function stopGame() {
+    isGamePaused = true;
+    gameStarted = false;
+    updatePlayPauseButton();
+    gameBoard.innerHTML = '';
+    window.location.href = '/';
+}
+
+function updatePlayPauseButton() {
+    const icon = playPauseButton.querySelector('i');
+    if (isGamePaused || !gameStarted) {
+        icon.classList.remove('fa-pause');
+        icon.classList.add('fa-play');
+    } else {
+        icon.classList.remove('fa-play');
+        icon.classList.add('fa-pause');
+    }
+}
+
 resetButton.addEventListener('click', resetGame);
+playPauseButton.addEventListener('click', togglePlayPause);
+stopButton.addEventListener('click', stopGame);
 closePopupButton.addEventListener('click', () => {
     winPopup.style.display = 'none';
     resetGame();
