@@ -10,6 +10,7 @@ const closePopupButton = document.getElementById('close-popup');
 const closeGameOverPopupButton = document.getElementById('close-game-over-popup');
 const timerDisplay = document.getElementById('timer');
 const scoreDisplay = document.getElementById('score');
+const loader = document.querySelector('.loader');
 
 let flippedCards = [];
 let matchedPairs = 0;
@@ -19,14 +20,34 @@ let timerInterval;
 let timeLeft = 5 * 60;
 let score = 0;
 
+
+function showLoader() {
+    loader.style.display = 'block';
+    loaderTimeout = setTimeout(() => {
+        loader.dataset.ready = 'true';
+    }, 2000);
+}
+
+function hideLoader() {
+    if (loader.dataset.ready === 'true') {
+        loader.style.display = 'none';
+        loader.dataset.ready = 'false';
+    } else {
+        setTimeout(hideLoader, 100);
+    }
+}
+
+
 socket.on('connect', () => {
     console.log('Connected to server');
+    showLoader();
     socket.emit('requestCards');
 });
 
 
 socket.on('cardsGenerated', (cards) => {
     console.log('Received cards:', cards);
+    hideLoader();
     gameBoard.innerHTML = '';
     cards.forEach((symbol, index) => {
         const card = document.createElement('div');
@@ -87,6 +108,7 @@ function resetGame() {
     updatePlayPauseButton();
     resetTimer();
     updateScoreDisplay();
+    showLoader();
     socket.emit('requestCards');
 }
 
@@ -198,12 +220,15 @@ closeGameOverPopupButton.addEventListener('click', () => {
 // For debugging
 socket.on('connect_error', (error) => {
     console.log('Connection error:', error);
+    hideLoader();
 });
 
 socket.on('connect_timeout', () => {
     console.log('Connection timeout');
+    hideLoader();
 });
 
 socket.on('error', (error) => {
     console.log('Socket error:', error);
+    hideLoader();
 });

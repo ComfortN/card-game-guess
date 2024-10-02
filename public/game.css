@@ -7,12 +7,13 @@ body {
     min-height: 100vh;
     margin: 0;
     padding: 20px;
-    background-color: #849571;
+    background-image: url(background.jpg);
     color: white;
 }
 
 #game-container {
     text-align: center;
+    background-color: rgba(132, 149, 113, 0.9);
 }
 
 h1{
@@ -89,6 +90,7 @@ h1{
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: #849571;
+    width: 100%;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0,0,0,0.3);
@@ -107,12 +109,55 @@ h1{
     box-shadow: 0 0 10px rgba(0,0,0,0.3);
 }
 
-#close-popup #close-game-over-popup {
+
+#close-popup {
     background-color: #CFCE95;
     color: white;
     padding: 10px 20px;
     border: none;
     cursor: pointer;
+}
+
+
+#close-game-over-popup {
+    background-color: #CFCE95;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+
+
+.loader {
+    background-color: rgba(132, 149, 113, 0.8);
+    width: fit-content;
+    font-weight: bold;
+    font-family: monospace;
+    font-size: 30px;
+    color: #0000;
+    overflow: hidden;
+    animation: l9 5s infinite cubic-bezier(0.3,1,0,1);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    display: none;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.loader:before {
+    content: "Loading..."
+}
+
+@keyframes l9 {
+    0%  {text-shadow: 0    0 #F1EDE4, 11ch 0 #A8C2A9, 22ch 0 #CFCE95, 33ch 0 #00A0B0,44ch 0 #000}
+    25% {text-shadow:-11ch 0 #F1EDE4,  0ch 0 #A8C2A9, 11ch 0 #CFCE95, 22ch 0 #00A0B0,33ch 0 #000}
+    50% {text-shadow:-22ch 0 #F1EDE4,-11ch 0 #A8C2A9,  0ch 0 #CFCE95, 11ch 0 #00A0B0,22ch 0 #000}
+    75% {text-shadow:-33ch 0 #F1EDE4,-22ch 0 #A8C2A9,-11ch 0 #CFCE95,  0ch 0 #00A0B0,11ch 0 #000}
+    100%{text-shadow:-44ch 0 #F1EDE4,-33ch 0 #A8C2A9,-22ch 0 #CFCE95,-11ch 0 #00A0B0, 0ch 0 #000}
 }
 
 @media (max-width: 600px) {
